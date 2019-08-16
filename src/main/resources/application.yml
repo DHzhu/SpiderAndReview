@@ -1,0 +1,56 @@
+server:
+  port: 8080
+  context-path: /
+
+spring:
+  thymeleaf:
+    mode: LEGACYHTML5
+    encoding: UTF-8
+    check-template-location: true
+    enabled: true
+    prefix: classpath:/static/
+    content-type: text/html
+    suffix: .html
+    cache: false
+  mvc:
+    static-path-pattern: /static/**
+    view:
+      prefix: /view
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/pharmcube?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&useSSL=false
+    username: root
+    password: 123456
+  http:
+    encoding:
+      charset: UTF-8
+    enabled: true
+    force: true
+
+
+###################  log配置  ###################
+logging:
+  level:
+    root: info
+  file: spiderAndReview.log
+  path: D:/weblogs/spiderAndReview/
+
+###################  mybatis-plus配置  ###################
+mybatis-plus:
+  mapper-locations: classpath*:com/dao/*.xml
+  typeAliasesPackage: com.model
+  global-config:
+    id-type: 2  #0:数据库ID自增   1:用户输入id  2:全局唯一id(IdWorker)  3:全局唯一ID(uuid)
+    db-column-underline: true
+    refresh-mapper: true
+    logic-delete-value: 0
+    logic-not-delete-value: 1
+    sql-injector: com.baomidou.mybatisplus.mapper.LogicSqlInjector #逻辑删除用
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false #配置的缓存的全局开关
+    lazyLoadingEnabled: true #延时加载的开关
+    multipleResultSetsEnabled: true #开启的话，延时加载一个属性时会加载该对象全部属性，否则按需加载属性
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #打印sql语句,调试用
+
+
