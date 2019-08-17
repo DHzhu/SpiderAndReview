@@ -3,54 +3,16 @@
  */
 package com.spider;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.config.AuthSchemes;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.config.SpiderProperties;
-import com.google.common.collect.Sets;
-import com.util.SpringBeanUtil;
+import com.util.FileUtil;
 
 import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.ResultItems;
-import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
 import us.codecraft.webmagic.utils.FilePersistentBase;
-import us.codecraft.webmagic.utils.HttpConstant;
 
 /**
  * @desc : TODO
@@ -59,9 +21,6 @@ import us.codecraft.webmagic.utils.HttpConstant;
  */
 public class MyFilePipeline extends FilePersistentBase implements Pipeline {
 	private static Logger log = LoggerFactory.getLogger(MyFilePipeline.class);
-	
-	private SpiderProperties spiderProperties = SpringBeanUtil.getBean("spiderProperties");
-
 	/**
 	 * create a FilePipeline with default path"/data/webmagic/"
 	 */
@@ -78,163 +37,29 @@ public class MyFilePipeline extends FilePersistentBase implements Pipeline {
 		// TODO Auto-generated method stub
 		Request request = resultItems.getRequest();
 		String urlStr = request.getUrl();
-		String path = this.path + PATH_SEPERATOR + task.getUUID() + PATH_SEPERATOR
-				+ urlStr.substring(urlStr.indexOf(task.getUUID()) + task.getUUID().length(), urlStr.lastIndexOf("/"))
-				+ PATH_SEPERATOR;
-		String fileName = resultItems.get("fileName");
-		String fileType = resultItems.get("fileType");
+		String info = resultItems.get("info");
 
-		Site site = null;
-		if (task != null) {
-			site = task.getSite();
-		}
-		Set<Integer> acceptStatCode;
-		Map<String, String> headers = null;
-		if (site != null) {
-			acceptStatCode = site.getAcceptStatCode();
-			headers = site.getHeaders();
-		} else {
-			acceptStatCode = Sets.newHashSet(200);
-		}
+		try {
 
-		CloseableHttpClient httpclient = null;
-		CloseableHttpResponse httpResponse = null;
+			if (!urlStr.matches(".*?/cfda$")) {
+				if(info != null) {
+					log.info(info);
+					FileUtil.appendFile(info + "\n");
+				}
+			}
 
-		InputStream in = null;
-		int statusCode = 0;
-		if (fileName != null) {
+			log.info("Processing complete");
+		} catch (Exception e) {
+			log.warn("write file error", e);
+		} finally {
 			try {
-				// 附件直接下载、页面用之前下载的内容
-				if (fileType.matches("(?i)jpg|png|jpeg|gif")) {
-					SSLContext sslcontext = createIgnoreVerifySSL();
-					Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder
-							.<ConnectionSocketFactory>create().register("http", PlainConnectionSocketFactory.INSTANCE)
-							.register("https", new SSLConnectionSocketFactory(sslcontext)).build();
-					PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(
-							socketFactoryRegistry);
-					HttpClients.custom().setConnectionManager(connManager);
-					httpclient = HttpClients.custom().setConnectionManager(connManager).build();
 
-					HttpUriRequest httpUriRequest = getHttpRequestBuilder(request, site, headers).build();
-					httpResponse = httpclient.execute(httpUriRequest);
-					statusCode = httpResponse.getStatusLine().getStatusCode();
-					if (statusAccept(acceptStatCode, statusCode)) {
-						HttpEntity entity = httpResponse.getEntity();
-						in = entity.getContent();
-					} else {
-						log.warn("code error " + statusCode + "\t" + request.getUrl());
-					}
-				} else {
-					in = new ByteArrayInputStream(((String) resultItems.get("content")).getBytes());
-				}
-
-				FileOutputStream fout = new FileOutputStream(getFile(path + fileName + "." + fileType));
-				int l = -1;
-				byte[] tmp = new byte[1024];
-				while ((l = in.read(tmp)) != -1) {
-					fout.write(tmp, 0, l);
-				}
-				fout.flush();
-				fout.close();
-
-				// 下载完成后修改状态
-
-
-				log.info("Processing complete");
 			} catch (Exception e) {
-				log.warn("write file error", e);
-			} finally {
-				try {
-					in.close();
-					if (httpResponse != null) {
-						// ensure the connection is released back to pool
-						EntityUtils.consume(httpResponse.getEntity());
-						httpclient.close();
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				log.info("----------------------------------------------------------------");
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+			log.info("----------------------------------------------------------------");
 		}
-	}
-
-	protected boolean statusAccept(Set<Integer> acceptStatCode, int statusCode) {
-		return acceptStatCode.contains(statusCode);
-	}
-
-	protected RequestBuilder getHttpRequestBuilder(Request request, Site site, Map<String, String> headers)
-			throws UnsupportedEncodingException {
-		RequestBuilder requestBuilder = selectRequestMethod(request)
-				.setUri(java.net.URLDecoder.decode(request.getUrl().toString(), "UTF-8"));
-		if (headers != null) {
-			for (Map.Entry<String, String> headerEntry : headers.entrySet()) {
-				requestBuilder.addHeader(headerEntry.getKey(), headerEntry.getValue());
-			}
-		}
-		RequestConfig defaultRequestConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.DEFAULT)
-				.setExpectContinueEnabled(true)
-				.setTargetPreferredAuthSchemes(Arrays.asList(AuthSchemes.NTLM, AuthSchemes.DIGEST))
-				.setConnectionRequestTimeout(site.getTimeOut()).setSocketTimeout(site.getTimeOut())
-				.setConnectTimeout(site.getTimeOut()).build();
-		RequestConfig requestConfig = RequestConfig.copy(defaultRequestConfig).build();
-		if ("on".equalsIgnoreCase(spiderProperties.getProxyType())) {
-			HttpHost host = new HttpHost(spiderProperties.getProxyHost(), spiderProperties.getProxyPort());
-			requestConfig = RequestConfig.copy(defaultRequestConfig).setProxy(host)
-					.setProxyPreferredAuthSchemes(Arrays.asList(AuthSchemes.BASIC)).build();
-		}
-		requestBuilder.setConfig(requestConfig);
-		return requestBuilder;
-	}
-
-	protected RequestBuilder selectRequestMethod(Request request) {
-		String method = request.getMethod();
-		if (method == null || method.equalsIgnoreCase(HttpConstant.Method.GET)) {
-			// default get
-			return RequestBuilder.get();
-		} else if (method.equalsIgnoreCase(HttpConstant.Method.POST)) {
-			RequestBuilder requestBuilder = RequestBuilder.post();
-			NameValuePair[] nameValuePair = (NameValuePair[]) request.getExtra("nameValuePair");
-			if (nameValuePair.length > 0) {
-				requestBuilder.addParameters(nameValuePair);
-			}
-			return requestBuilder;
-		} else if (method.equalsIgnoreCase(HttpConstant.Method.HEAD)) {
-			return RequestBuilder.head();
-		} else if (method.equalsIgnoreCase(HttpConstant.Method.PUT)) {
-			return RequestBuilder.put();
-		} else if (method.equalsIgnoreCase(HttpConstant.Method.DELETE)) {
-			return RequestBuilder.delete();
-		} else if (method.equalsIgnoreCase(HttpConstant.Method.TRACE)) {
-			return RequestBuilder.trace();
-		}
-		throw new IllegalArgumentException("Illegal HTTP Method " + method);
-	}
-
-	public static SSLContext createIgnoreVerifySSL() throws NoSuchAlgorithmException, KeyManagementException {
-		SSLContext sc = SSLContext.getInstance("SSLv3");
-
-		// 实现一个X509TrustManager接口，用于绕过验证，不用修改里面的方法
-		TrustManager trustManager = new X509TrustManager() {
-			@Override
-			public void checkClientTrusted(java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
-					String paramString) throws CertificateException {
-			}
-
-			@Override
-			public void checkServerTrusted(java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
-					String paramString) throws CertificateException {
-			}
-
-			@Override
-			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-				return null;
-			}
-		};
-
-		sc.init(null, new TrustManager[] { trustManager }, null);
-		return sc;
 	}
 
 }

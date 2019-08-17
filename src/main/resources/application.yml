@@ -57,12 +57,12 @@ mybatis-plus:
 spider:
   retryTimes: 3
   sleepTime: 1000
-  #starUrl: http://db.pharmcube.com/database/cfda
-  starUrl: http://db.pharmcube.com/database/cfda/detail/cfda_inlet_instrument_history_data/12437
+  starUrl: http://db.pharmcube.com/database/cfda
+  #starUrl: http://db.pharmcube.com/database/cfda/detail/cfda_inlet_instrument_history_data/12437
   #starUrl: http://db.pharmcube.com/database/cfda/detail/cfda_cn_instrument/f3bb342fe3409a3bcb6eb81e092ac54e
-  savePath: D:/Temps/cache
+  savePath: D:/Temps/cache/cfda.txt
   detailPath: http://db.pharmcube.com/database/cfda/detail/
-  threadNum: 1
+  threadNum: 3
   driver: phantomjs
   execPath: phantomjs/windows/phantomjs_2.0.exe
   driverLoglevel: INFO

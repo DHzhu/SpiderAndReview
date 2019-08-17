@@ -74,7 +74,7 @@ public class ItemInfo extends Model<ItemInfo>{
 				"\"expiredDate\":\"" + expiredDate + "\"," + 
 				"\"approvalDate\":\"" + approvalDate + "\"," + 
 				"\"updateTime\":\"" + updateTime + "\"," + 
-				"\"saveTime\":\"" + saveTime + "\"," + 
+				"\"saveTime\":\"" + saveTime +
 				"}";
 	}
 

@@ -8,32 +8,45 @@
 package com.spider;
 
 import com.config.SpiderProperties;
+import com.util.FileUtil;
 
 import us.codecraft.webmagic.Spider;
-/** 
-* @ClassName: StartSpider 
-* @Description: TODO(这里用一句话描述这个类的作用) 
-* @author: zhuyj
-* @date: 2019-08-17 
-*/
-public class StartSpider implements Runnable{
-	
+
+/**
+ * @ClassName: StartSpider
+ * @Description: TODO(这里用一句话描述这个类的作用)
+ * @author: zhuyj
+ * @date: 2019-08-17
+ */
+public class StartSpider implements Runnable {
+
 	private SpiderProperties spiderProperties;
-	
+
 	public StartSpider(SpiderProperties spiderProperties) {
 		this.spiderProperties = spiderProperties;
 	}
-	
+
 	@SuppressWarnings("resource")
 	@Override
 	public void run() {
+		try {
+			FileUtil.init();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
 		Spider.create(new CfdaProcessor())
-		.addUrl(spiderProperties.getStarUrl())
-		.addPipeline(new MyFilePipeline(spiderProperties.getSavePath()))
-		.setDownloader(new CfdaSeleniumDownloader()
-							.setSleepTime(Integer.valueOf(spiderProperties.getSleepTime())))
-		.thread(Integer.valueOf(spiderProperties.getThreadNum()))
-		.run();
+				.addUrl(spiderProperties.getStarUrl())
+				.addPipeline(new MyFilePipeline(spiderProperties.getSavePath()))
+				.setDownloader(new CfdaSeleniumDownloader().setSleepTime(Integer.valueOf(spiderProperties.getSleepTime())))
+				.thread(Integer.valueOf(spiderProperties.getThreadNum()))
+				.run();
+		
+		try {
+			FileUtil.close();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 
 }
