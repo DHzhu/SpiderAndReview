@@ -2,30 +2,30 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<groupId>com.local</groupId>
 	<artifactId>SpiderAndReview</artifactId>
 	<version>0.0.1</version>
-	
+
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.0.0.RELEASE</version>
+		<version>1.5.9.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	
+
 	<dependencies>
-		<!--spring boot所需要的包-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-        
-        <!--mybatisplus-->
+		<!--spring boot所需要的包 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
+		<!--mybatisplus -->
 		<dependency>
 			<groupId>com.baomidou</groupId>
 			<artifactId>mybatisplus-spring-boot-starter</artifactId>
@@ -42,26 +42,76 @@
 			<version>2.1.2</version>
 		</dependency>
 
-		<!--jdbc 存储-->
+		<!--jdbc 存储 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 
-		<!--mysql 驱动-->
+		<!--mysql 驱动 -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
-        
-        <!--lombok 便捷的插件 消除冗余代码-->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
+
+		<!--lombok 便捷的插件 消除冗余代码 -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- webmagic jar start -->
+		<dependency>
+			<groupId>us.codecraft</groupId>
+			<artifactId>webmagic-core</artifactId>
+			<version>0.7.3</version>
+		</dependency>
+		<dependency>
+			<groupId>us.codecraft</groupId>
+			<artifactId>webmagic-extension</artifactId>
+			<version>0.7.3</version>
+		</dependency>
+		<dependency>
+			<groupId>us.codecraft</groupId>
+			<artifactId>webmagic-selenium</artifactId>
+			<version>0.7.3</version>
+		</dependency>
+		<!-- webmagic jar end -->
+
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.58</version>
+		</dependency>
+		
 	</dependencies>
 	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+    			<groupId>org.seleniumhq.selenium</groupId>
+    			<artifactId>selenium-java</artifactId>
+    			<version>2.41.0</version>
+			</dependency>
+			<dependency>
+    			<groupId>org.seleniumhq.selenium</groupId>
+    			<artifactId>selenium-api</artifactId>
+    			<version>2.41.0</version>
+			</dependency>
+			<dependency>
+    			<groupId>org.seleniumhq.selenium</groupId>
+    			<artifactId>selenium-remote-driver</artifactId>
+    			<version>2.41.0</version>
+			</dependency>
+			<dependency>
+    			<groupId>org.seleniumhq.selenium</groupId>
+    			<artifactId>selenium-support</artifactId>
+    			<version>2.41.0</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -77,7 +127,7 @@
 			</plugin>
 		</plugins>
 		<resources>
-			<!--用于jar-->
+			<!--用于jar -->
 			<resource>
 				<directory>src/lib</directory>
 				<targetPath>BOOT-INF/lib/</targetPath>

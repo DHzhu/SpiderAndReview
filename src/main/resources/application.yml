@@ -52,5 +52,27 @@ mybatis-plus:
     lazyLoadingEnabled: true #延时加载的开关
     multipleResultSetsEnabled: true #开启的话，延时加载一个属性时会加载该对象全部属性，否则按需加载属性
     #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #打印sql语句,调试用
+    
+###################  爬虫配置  ###################
+spider:
+  retryTimes: 3
+  sleepTime: 1000
+  #starUrl: http://db.pharmcube.com/database/cfda
+  starUrl: http://db.pharmcube.com/database/cfda/detail/cfda_inlet_instrument_history_data/12437
+  #starUrl: http://db.pharmcube.com/database/cfda/detail/cfda_cn_instrument/f3bb342fe3409a3bcb6eb81e092ac54e
+  savePath: D:/Temps/cache
+  detailPath: http://db.pharmcube.com/database/cfda/detail/
+  threadNum: 1
+  driver: phantomjs
+  execPath: phantomjs/windows/phantomjs_2.0.exe
+  driverLoglevel: INFO
+  driverLogFile: D:/weblogs/spiderAndReview/phantomjsdriver.log
+  proxyType: off
+  proxyHost: 120.37.52.38
+  proxyPort: 8118
+  
+
+
+
 
 

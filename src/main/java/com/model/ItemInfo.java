@@ -66,14 +66,15 @@ public class ItemInfo extends Model<ItemInfo>{
 	
 	@Override
 	public String toString() {
-		return "ITEM_INFO{esId=" + esId + 
-				"productName=" + productName + 
-				"approvalNum=" + approvalNum +
-				"enterprise=" + enterprise +
-				"enterpriseAddress=" + enterpriseAddress +
-				"expiredDate=" + expiredDate +
-				"updateTime=" + updateTime +
-				"saveTime=" + saveTime +
+		return "{\"esId\":\"" + esId + "\"," + 
+				"\"productName\":\"" + productName + "\"," +  
+				"\"approvalNum\":\"" + approvalNum + "\"," + 
+				"\"enterprise\":\"" + enterprise + "\"," + 
+				"\"enterpriseAddress\":\"" + enterpriseAddress + "\"," + 
+				"\"expiredDate\":\"" + expiredDate + "\"," + 
+				"\"approvalDate\":\"" + approvalDate + "\"," + 
+				"\"updateTime\":\"" + updateTime + "\"," + 
+				"\"saveTime\":\"" + saveTime + "\"," + 
 				"}";
 	}
 
