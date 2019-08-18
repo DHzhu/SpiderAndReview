@@ -61,7 +61,7 @@ public class BaseController {
 		Page<ItemInfo> page = new Page<>(pageNum == null ? 0 : pageNum, pageSize == null ? 10 : pageSize);
 		iItemInfoService.search(page, info);
 		map.put("code", 0);
-		map.put("msg", 0);
+		map.put("msg", "查询成功");
 		map.put("result", page);
 		return map;
 	}
