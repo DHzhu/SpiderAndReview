@@ -140,7 +140,7 @@ public class CfdaSeleniumDownloader implements Downloader, Closeable{
 				page.putField("info", JSON.toJSONString(itemInfo));
 			}else {
 	        	int menuSize = webDriver.findElements(By.xpath("//ul[@class='show_lits ylqx']//li")).size();
-				for(int i = menuSize; i <= menuSize; i++) {
+				for(int i = 1; i <= menuSize; i++) {
 					WebElement menuElement = webDriver.findElement(By.xpath("//ul[@class='show_lits ylqx']//li[" + i + "]"));
 					menuElement.click();
 					
@@ -149,14 +149,14 @@ public class CfdaSeleniumDownloader implements Downloader, Closeable{
 					
 					getInfo(webDriver, page);
 					
-					/*
+					
 					int totalNum = Integer.valueOf(webDriver.findElement(By.xpath("//b[@class='totalPage']")).getText()) ;
 					for(int j = 2; j <= totalNum; j++) {
 						WebElement nextPage = webDriver.findElement(By.xpath("//a[@class='laypage_next']"));
 						nextPage.click();
 						waitDone(wait);
 						getInfo(webDriver, page);
-					}*/
+					}
 					
 					
 				}
