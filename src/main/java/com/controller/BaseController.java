@@ -36,6 +36,8 @@ public class BaseController {
 	
 	private static Logger log = LoggerFactory.getLogger(BaseController.class);
 	
+	private Map<String, Object> map = new HashMap<String, Object>();
+	
 	@Autowired
 	private IItemInfoService iItemInfoService;
 	
@@ -49,7 +51,6 @@ public class BaseController {
 		
 		log.info(spiderProperties.getDetailPath());
 		
-		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("result", iItemInfoService.search(info));
 		return map;
 	}
@@ -58,7 +59,7 @@ public class BaseController {
 	@ResponseBody
 	public Map<String, Object> search(Integer pageNum, Integer pageSize, ItemInfo info) {
 		log.info("===============start search info by page===============");
-		Map<String, Object> map = new HashMap<String, Object>();
+		
 		Page<ItemInfo> page = new Page<>(pageNum == null ? 0 : pageNum, pageSize == null ? 10 : pageSize);
 		map.put("result", iItemInfoService.search(page, info));
 		return map;
@@ -68,7 +69,12 @@ public class BaseController {
 	@ResponseBody
 	public Map<String, Object> startSpider() {
 		log.info("===============start spider===============");
-		Map<String, Object> map = new HashMap<String, Object>();
+		
+		if(StartSpider.isRuning) {
+			map.put("result", "执行中，请稍后再试");
+			
+			return map;
+		}
 		
 		Thread thread = new Thread(new StartSpider(spiderProperties));
 		thread.start();

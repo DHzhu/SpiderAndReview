@@ -19,6 +19,8 @@ import us.codecraft.webmagic.Spider;
  * @date: 2019-08-17
  */
 public class StartSpider implements Runnable {
+	
+	public static boolean isRuning = false;
 
 	private SpiderProperties spiderProperties;
 
@@ -34,7 +36,9 @@ public class StartSpider implements Runnable {
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-
+		
+		isRuning = true;
+		
 		Spider.create(new CfdaProcessor())
 				.addUrl(spiderProperties.getStarUrl())
 				.addPipeline(new MyFilePipeline(spiderProperties.getSavePath()))
@@ -46,7 +50,10 @@ public class StartSpider implements Runnable {
 			FileUtil.close();
 		} catch (Exception e) {
 			// TODO: handle exception
+		}finally {
+			isRuning = false;
 		}
+	
 	}
 
 }
