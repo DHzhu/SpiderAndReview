@@ -14,11 +14,13 @@ import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
 import us.codecraft.webmagic.utils.FilePersistentBase;
 
-/**
- * @desc : TODO
- * @author: Zhu
- * @date : 2017年9月26日
- */
+
+/** 
+* @ClassName: MyFilePipeline 
+* @Description: TODO(这里用一句话描述这个类的作用) 
+* @author: zhuyj
+* @date: 2019-08-16 
+*/
 public class MyFilePipeline extends FilePersistentBase implements Pipeline {
 	private static Logger log = LoggerFactory.getLogger(MyFilePipeline.class);
 	/**

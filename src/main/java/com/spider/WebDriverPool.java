@@ -27,11 +27,13 @@ import org.slf4j.LoggerFactory;
 import com.config.SpiderProperties;
 import com.util.SpringBeanUtil;
 
-/**
- * @desc  : 重写webmagic的WebDriverPool，使用phantomjs和selenium组合
- * @author: Zhu
- * @date  : 2017年9月26日
- */
+
+/** 
+* @ClassName: WebDriverPool 
+* @Description: TODO(这里用一句话描述这个类的作用) 
+* @author: zhuyj
+* @date: 2019-08-16 
+*/
 public class WebDriverPool {
 	private static Logger log = LoggerFactory.getLogger(WebDriverPool.class);
 	

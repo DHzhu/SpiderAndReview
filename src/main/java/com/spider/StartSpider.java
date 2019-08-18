@@ -16,7 +16,7 @@ import us.codecraft.webmagic.Spider;
  * @ClassName: StartSpider
  * @Description: TODO(这里用一句话描述这个类的作用)
  * @author: zhuyj
- * @date: 2019-08-17
+ * @date: 2019-08-16
  */
 public class StartSpider implements Runnable {
 	
