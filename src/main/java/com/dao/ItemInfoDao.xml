@@ -3,6 +3,23 @@
 <mapper namespace="com.dao.ItemInfoDao">
 
 	<!-- 开启二级缓存 -->
-	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache" />
+
+	<select id="selectMyPage" resultType="com.model.ItemInfo">
+		SELECT
+			ES_ID,
+			PRODUCT_NAME,
+			APPROVAL_NUM,
+			ENTERPRISE,
+			ENTERPRISE_ADDRESS,
+			APPROVAL_DATE,
+			EXPIRED_DATE,
+			DATE(EXPIRED_DATE) &lt; now() AS expired
+		FROM ITEM_INFO
+		WHERE
+			1 = 1
+			${ew.sqlSegment}
+
+	</select>
 
 </mapper>

@@ -7,7 +7,13 @@
 */
 package com.dao;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.session.RowBounds;
+
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.model.ItemInfo;
 
 /** 
@@ -17,5 +23,5 @@ import com.model.ItemInfo;
 * @date: 2019-08-15 
 */
 public interface ItemInfoDao extends BaseMapper<ItemInfo>{
-
+	List<ItemInfo> selectMyPage(RowBounds rowBounds, @Param("ew") Wrapper<ItemInfo> wrapper);
 }

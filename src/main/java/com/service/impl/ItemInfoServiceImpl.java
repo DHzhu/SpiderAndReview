@@ -67,7 +67,7 @@ public class ItemInfoServiceImpl implements IItemInfoService{
 	@Override
 	public Page<ItemInfo> search(Page<ItemInfo> page , ItemInfo info) {
 		// TODO Auto-generated method stub
-		return page.setRecords(itemInfoDao.selectPage(page, condition(info)));
+		return page.setRecords(itemInfoDao.selectMyPage(page, condition(info)));
 	}
 	
 	/** 
@@ -79,6 +79,10 @@ public class ItemInfoServiceImpl implements IItemInfoService{
 	private EntityWrapper<ItemInfo> condition(ItemInfo info){
 		EntityWrapper<ItemInfo> wrapper = new EntityWrapper<>();
 		if(info != null) {
+			if(info.getEsId() != null) {
+				wrapper.like("ES_ID", info.getEsId());
+			}
+			
 			if(info.getProductName() != null) {
 				wrapper.like("PRODUCT_NAME", info.getProductName());
 			}

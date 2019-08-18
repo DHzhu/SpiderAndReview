@@ -9,7 +9,9 @@ package com.model;
 
 import java.io.Serializable;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 
@@ -37,6 +39,10 @@ public class ItemInfo extends Model<ItemInfo>{
 	private String enterpriseAddress;
 	private String approvalDate;
 	private String expiredDate;
+	
+	@JSONField(serialize = false, deserialize = false)
+	@TableField(exist = false)
+	private String expired;
 
 	/** 
 	* @Title: pkVal 
