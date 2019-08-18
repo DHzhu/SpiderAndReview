@@ -24,6 +24,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.fastjson.JSON;
 import com.config.SpiderProperties;
 import com.model.ItemInfo;
 import com.util.SpringBeanUtil;
@@ -116,8 +117,15 @@ public class CfdaSeleniumDownloader implements Downloader, Closeable{
 						if(fristTd.getText().equals("地址") || fristTd.getText().equals("注册人住所") || fristTd.getText().equals("生产厂地址（中文）")) {
 							itemInfo.setEnterpriseAddress(value);
 						}
-						if(fristTd.getText().equals("生产单位") || fristTd.getText().equals("注册人名称") || fristTd.getText().equals("生产厂商名称（中文）")) {
-							itemInfo.setEnterprise(value);
+						if(fristTd.getText().equals("生产单位") || fristTd.getText().equals("注册人名称") || fristTd.getText().equals("生产厂商名称（中文）") || fristTd.getText().equals("生产厂商名称（英文）")) {
+							if(fristTd.getText().equals("生产厂商名称（英文）")) {
+								if(itemInfo.getEnterprise() == null || itemInfo.getEnterprise().equals("")) {
+									itemInfo.setEnterprise(value);
+								}
+							}else {
+								itemInfo.setEnterprise(value);
+							}
+							
 						}
 						if(fristTd.getText().equals("注册号") || fristTd.getText().equals("注册证编号")) {
 							itemInfo.setApprovalNum(value);
@@ -129,8 +137,7 @@ public class CfdaSeleniumDownloader implements Downloader, Closeable{
 						itemInfo.setEsId(splitUrl[splitUrl.length - 1]);
 					}
 				}
-				page.putField("info", itemInfo.toString());
-				//log.info(itemInfo.toString());
+				page.putField("info", JSON.toJSONString(itemInfo));
 			}else {
 	        	int menuSize = webDriver.findElements(By.xpath("//ul[@class='show_lits ylqx']//li")).size();
 				for(int i = menuSize; i <= menuSize; i++) {
@@ -142,14 +149,14 @@ public class CfdaSeleniumDownloader implements Downloader, Closeable{
 					
 					getInfo(webDriver, page);
 					
-					
+					/*
 					int totalNum = Integer.valueOf(webDriver.findElement(By.xpath("//b[@class='totalPage']")).getText()) ;
 					for(int j = 2; j <= totalNum; j++) {
 						WebElement nextPage = webDriver.findElement(By.xpath("//a[@class='laypage_next']"));
 						nextPage.click();
 						waitDone(wait);
 						getInfo(webDriver, page);
-					}
+					}*/
 					
 					
 				}

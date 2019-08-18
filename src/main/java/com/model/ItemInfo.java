@@ -8,13 +8,10 @@
 package com.model;
 
 import java.io.Serializable;
-import java.util.Date;
-
-import org.springframework.format.annotation.DateTimeFormat;
 
 import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -26,12 +23,13 @@ import lombok.EqualsAndHashCode;
 * @date: 2019-08-15 
 */
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper=true)
 @TableName("ITEM_INFO")
 public class ItemInfo extends Model<ItemInfo>{
 
 	private static final long serialVersionUID = -2406466700647121948L;
 	
+	@TableId
 	private String esId;
 	private String productName;
 	private String approvalNum;
@@ -39,18 +37,6 @@ public class ItemInfo extends Model<ItemInfo>{
 	private String enterpriseAddress;
 	private String approvalDate;
 	private String expiredDate;
-	@JsonFormat(
-	    pattern = "yyyy-MM-dd HH:mm:ss",
-	    timezone = "GMT+8"
-	)
-	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-	private Date updateTime;
-	@JsonFormat(
-	    pattern = "yyyy-MM-dd HH:mm:ss",
-	    timezone = "GMT+8"
-	)
-	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-	private Date saveTime;
 
 	/** 
 	* @Title: pkVal 
@@ -72,10 +58,28 @@ public class ItemInfo extends Model<ItemInfo>{
 				"\"enterprise\":\"" + enterprise + "\"," + 
 				"\"enterpriseAddress\":\"" + enterpriseAddress + "\"," + 
 				"\"expiredDate\":\"" + expiredDate + "\"," + 
-				"\"approvalDate\":\"" + approvalDate + "\"," + 
-				"\"updateTime\":\"" + updateTime + "\"," + 
-				"\"saveTime\":\"" + saveTime +
+				"\"approvalDate\":\"" + approvalDate + 
 				"}";
+	}
+	
+
+	public int equal(ItemInfo another) {
+		if(another == null) {
+			return -1;
+		}
+		if(this.esId.equalsIgnoreCase(another.getEsId())) {
+			if(this.productName.equalsIgnoreCase(another.getProductName()) &&
+					this.approvalNum.equalsIgnoreCase(another.getApprovalNum()) && 
+					this.enterprise.equalsIgnoreCase(another.getEnterprise()) && 
+					this.enterpriseAddress.equalsIgnoreCase(another.getEnterpriseAddress()) && 
+					this.expiredDate.equalsIgnoreCase(another.getExpiredDate()) && 
+					this.approvalDate.equalsIgnoreCase(another.getApprovalDate())) {
+				return 0;
+			}
+			return 1;
+		}
+		
+		return  -1;
 	}
 
 }

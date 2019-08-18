@@ -8,8 +8,10 @@
 package com.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.baomidou.mybatisplus.plugins.Page;
+
 import com.model.ItemInfo;
 
 /** 
@@ -22,4 +24,6 @@ public interface IItemInfoService {
 	public List<ItemInfo> search(ItemInfo info);
 	
 	public Page<ItemInfo> search(Page<ItemInfo> page , ItemInfo info);
+	
+	public Map<String, Object> saveItem();
 }

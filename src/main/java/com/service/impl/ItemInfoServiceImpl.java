@@ -7,16 +7,26 @@
 */
 package com.service.impl;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.config.SpiderProperties;
 import com.dao.ItemInfoDao;
 import com.model.ItemInfo;
 import com.service.IItemInfoService;
+import com.spider.StartSpider;
 
 /** 
 * @ClassName: IItemInfoServiceImpl 
@@ -29,7 +39,9 @@ public class ItemInfoServiceImpl implements IItemInfoService{
 	
 	@Autowired
 	private ItemInfoDao itemInfoDao;
-
+	
+	@Autowired
+	private SpiderProperties spiderProperties;
 
 	/** 
 	* @Title: search 
@@ -67,8 +79,8 @@ public class ItemInfoServiceImpl implements IItemInfoService{
 	private EntityWrapper<ItemInfo> condition(ItemInfo info){
 		EntityWrapper<ItemInfo> wrapper = new EntityWrapper<>();
 		if(info != null) {
-			if(info.getEsId() != null) {
-				wrapper.like("APPROVAL_NUM", info.getEsId());
+			if(info.getProductName() != null) {
+				wrapper.like("PRODUCT_NAME", info.getProductName());
 			}
 			
 			if(info.getApprovalNum() != null) {
@@ -81,6 +93,69 @@ public class ItemInfoServiceImpl implements IItemInfoService{
 		}
         wrapper.orderBy("ES_ID", false);
 		return wrapper;
+	}
+
+
+	/* (非 Javadoc) 
+	* <p>Title: saveItem</p> 
+	* <p>Description: </p>  
+	* @see com.service.IItemInfoService#saveItem() 
+	*/
+	@Override
+	public Map<String, Object> saveItem() {
+		// TODO Auto-generated method stub
+		Map<String, Object> map = new HashMap<String, Object>();
+		String path = spiderProperties.getSavePath();
+		File file = new File(path);
+		if(file.exists()) {
+			if(StartSpider.isRuning) {
+				map.put("result", "正在爬取数据，请稍后再试");
+			}else {
+				BufferedReader br = null;
+				int updateNum = 0;
+				int newNum = 0;
+				try {
+					
+					br = new BufferedReader(new InputStreamReader(new FileInputStream(path)));
+					String str;
+					while((str = br.readLine()) != null) {
+						ItemInfo item = JSON.parseObject(str,ItemInfo.class);
+						
+						ItemInfo temp = itemInfoDao.selectById(item.getEsId());
+						int flag = item.equal(temp);
+						if(flag == -1) {
+							itemInfoDao.insert(item);
+							newNum ++;
+						}else if(flag == 1){
+							itemInfoDao.updateById(item);
+							updateNum ++;
+						}
+						
+					}
+					map.put("updateNum", updateNum);
+					map.put("newNum", newNum);
+					map.put("result", "入库成功");
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}finally {
+					if(br != null) {
+						try {
+							br.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+
+			}
+			
+		}else {
+			map.put("result", "文件不存在");
+		}
+		
+		return map;
 	}
 
 }

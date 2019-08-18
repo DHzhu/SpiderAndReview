@@ -7,7 +7,6 @@
 */
 package com;
 
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -22,7 +21,6 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 */
 @SpringBootApplication(scanBasePackages = { "com.*" })
 @EnableConfigurationProperties
-@EnableBatchProcessing
 public class StartApp extends SpringBootServletInitializer {
 
 	/** 

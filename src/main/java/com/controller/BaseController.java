@@ -83,4 +83,13 @@ public class BaseController {
 		
 		return map;
 	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/insertToDb")
+	@ResponseBody
+	public Map<String, Object> insertToDb() {
+		log.info("===============start insert===============");
+		
+		map.putAll(iItemInfoService.saveItem());		
+		return map;
+	}
 }
