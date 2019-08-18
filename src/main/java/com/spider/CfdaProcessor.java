@@ -35,7 +35,7 @@ public class CfdaProcessor implements PageProcessor {
 	@Override
 	public void process(Page page) {
 		// TODO Auto-generated method stub
-		System.out.println("test");
+		
 	}
 
 	/**

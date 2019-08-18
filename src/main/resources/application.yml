@@ -57,14 +57,14 @@ mybatis-plus:
 spider:
   retryTimes: 3
   sleepTime: 1000
-  starUrl: http://db.pharmcube.com/database/cfda
+  starUrl: http://db.pharmcube.com/database/cfda  #爬取入口
   #starUrl: http://db.pharmcube.com/database/cfda/detail/cfda_inlet_instrument_history_data/12437
   #starUrl: http://db.pharmcube.com/database/cfda/detail/cfda_cn_instrument/f3bb342fe3409a3bcb6eb81e092ac54e
-  savePath: D:/Temps/cache/cfda.txt
-  detailPath: http://db.pharmcube.com/database/cfda/detail/
-  threadNum: 3
+  savePath: D:/Temps/cache/cfda.txt			#文件存放路径
+  detailPath: http://db.pharmcube.com/database/cfda/detail/    #详情接口，勿改
+  threadNum: 3		#启动线程数
   driver: phantomjs
-  execPath: phantomjs/windows/phantomjs_2.0.exe
+  execPath: phantomjs/windows/phantomjs_2.0.exe		#phantomjs路径，linux下要安装phantomjs
   driverLoglevel: INFO
   driverLogFile: D:/weblogs/spiderAndReview/phantomjsdriver.log
   proxyType: off
