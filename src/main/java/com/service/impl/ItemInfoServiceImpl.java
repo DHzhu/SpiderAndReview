@@ -111,6 +111,7 @@ public class ItemInfoServiceImpl implements IItemInfoService{
 		Map<String, Object> map = new HashMap<String, Object>();
 		String path = spiderProperties.getSavePath();
 		File file = new File(path);
+		map.put("code", -1);
 		if(file.exists()) {
 			if(StartSpider.isRuning) {
 				map.put("result", "正在爬取数据，请稍后再试");
@@ -138,6 +139,7 @@ public class ItemInfoServiceImpl implements IItemInfoService{
 					}
 					map.put("updateNum", updateNum);
 					map.put("newNum", newNum);
+					map.put("code", 0);
 					map.put("result", "入库成功");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block

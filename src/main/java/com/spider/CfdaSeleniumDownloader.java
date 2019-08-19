@@ -112,26 +112,30 @@ public class CfdaSeleniumDownloader implements Downloader, Closeable{
 							itemInfo.setApprovalDate(value.replaceAll("\\.", "-"));
 						}
 						if(fristTd.getText().equals("有效期") || fristTd.getText().equals("有效期至") || fristTd.getText().equals("有效期截止日")) {
-							itemInfo.setExpiredDate(value.replaceAll("\\.", "-"));
+							if(itemInfo.getExpiredDate() == null || itemInfo.getExpiredDate().equals("")) {
+								itemInfo.setExpiredDate(value.replaceAll("\\.", "-"));
+							}
 						}
 						if(fristTd.getText().equals("地址") || fristTd.getText().equals("注册人住所") || fristTd.getText().equals("生产厂地址（中文）")) {
-							itemInfo.setEnterpriseAddress(value);
+							if(itemInfo.getEnterpriseAddress() == null || itemInfo.getEnterpriseAddress().equals("")) {
+								itemInfo.setEnterpriseAddress(value);
+							}
 						}
 						if(fristTd.getText().equals("生产单位") || fristTd.getText().equals("注册人名称") || fristTd.getText().equals("生产厂商名称（中文）") || fristTd.getText().equals("生产厂商名称（英文）")) {
-							if(fristTd.getText().equals("生产厂商名称（英文）")) {
-								if(itemInfo.getEnterprise() == null || itemInfo.getEnterprise().equals("")) {
-									itemInfo.setEnterprise(value);
-								}
-							}else {
+							if(itemInfo.getEnterprise() == null || itemInfo.getEnterprise().equals("")) {
 								itemInfo.setEnterprise(value);
 							}
 							
 						}
 						if(fristTd.getText().equals("注册号") || fristTd.getText().equals("注册证编号")) {
-							itemInfo.setApprovalNum(value);
+							if(itemInfo.getApprovalNum() == null || itemInfo.getApprovalNum().equals("")) {
+								itemInfo.setApprovalNum(value);
+							}
 						}
 						if(fristTd.getText().equals("产品名称") || fristTd.getText().equals("产品名称（中文）")) {
-							itemInfo.setProductName(value);
+							if(itemInfo.getProductName() == null || itemInfo.getProductName().equals("")) {
+								itemInfo.setProductName(value);
+							}
 						}
 						String[] splitUrl = url.split("/");
 						itemInfo.setEsId(splitUrl[splitUrl.length - 1]);
