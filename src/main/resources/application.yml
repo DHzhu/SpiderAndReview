@@ -57,8 +57,8 @@ mybatis-plus:
 spider:
   retryTimes: 3
   sleepTime: 100
-  starUrl: http://db.pharmcube.com/database/cfda  #爬取入口
-  #starUrl: http://db.pharmcube.com/database/cfda/detail/cfda_inlet_instrument_history_data/12437
+  #starUrl: http://db.pharmcube.com/database/cfda  #爬取入口
+  starUrl: http://db.pharmcube.com/database/cfda/detail/cfda_inlet_instrument_history_data/12437
   #starUrl: http://db.pharmcube.com/database/cfda/detail/cfda_cn_instrument/f3bb342fe3409a3bcb6eb81e092ac54e
   savePath: D:/Temps/cache/cfda.txt			#文件存放路径
   detailPath: http://db.pharmcube.com/database/cfda/detail/    #详情接口，勿改
