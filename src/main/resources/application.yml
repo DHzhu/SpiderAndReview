@@ -64,7 +64,7 @@ spider:
   detailPath: http://db.pharmcube.com/database/cfda/detail/    #详情接口，勿改
   threadNum: 3		#启动线程数
   driver: phantomjs
-  execPath: phantomjs/windows/phantomjs_2.0.exe		#phantomjs路径，linux下要安装phantomjs
+  execPath: D:/Projects/Workspace/phantomjs_2.0.exe		#phantomjs路径，linux下要安装phantomjs
   driverLoglevel: INFO
   driverLogFile: D:/weblogs/spiderAndReview/phantomjsdriver.log
   proxyType: off
