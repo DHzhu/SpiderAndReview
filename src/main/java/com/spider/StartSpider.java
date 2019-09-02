@@ -47,7 +47,7 @@ public class StartSpider implements Runnable {
 				.run();
 		
 		try {
-			FileUtil.close();
+			
 		} catch (Exception e) {
 			// TODO: handle exception
 		}finally {
