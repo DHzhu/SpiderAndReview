@@ -43,7 +43,7 @@ public class MyFilePipeline extends FilePersistentBase implements Pipeline {
 
 		try {
 
-			if (!urlStr.matches(".*?/cfda$")) {
+			if (!urlStr.matches(".*?/cfda$") && !urlStr.matches(".*?/cfda\\?type=(\\d+)&page=(\\d+)$")) {
 				if(info != null) {
 					log.info(info);
 					FileUtil.appendFile(info + "\n");

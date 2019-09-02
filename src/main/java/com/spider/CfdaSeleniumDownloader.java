@@ -52,6 +52,8 @@ public class CfdaSeleniumDownloader implements Downloader, Closeable{
 
 	private int poolSize = 1;
 	
+	public int sizeLimit = 5;
+	
 	private SpiderProperties spiderProperties = SpringBeanUtil.getBean("spiderProperties");
 	
 	
@@ -100,7 +102,48 @@ public class CfdaSeleniumDownloader implements Downloader, Closeable{
 		
 		try{
 			String url = request.getUrl();
-			if(!url.matches(".*?/cfda$")){
+			
+			if(url.matches(".*?/cfda$")) {
+				int menuSize = webDriver.findElements(By.xpath("//ul[@class='show_lits ylqx']//li")).size();
+				
+				for(int i = 1; i <= menuSize; i++) {
+					page.addTargetRequest(url + "?type=" + i + "&page=1");
+				}
+				
+			}else if(url.matches(".*?/cfda\\?type=(\\d+)&page=(\\d+)$")) {
+				Pattern pattern_page = Pattern.compile("(.*?/cfda)\\?type=(\\d+)&page=(\\d+)$",Pattern.CASE_INSENSITIVE);
+		        Matcher matcher_page = pattern_page.matcher(url);		        
+		        matcher_page.find();
+		        
+		        int type = Integer.valueOf(matcher_page.group(2));
+		        int pageNum = Integer.valueOf(matcher_page.group(3));
+
+				
+				WebElement menuElement = webDriver.findElement(By.xpath("//ul[@class='show_lits ylqx']//li[" + type + "]"));
+				menuElement.click();
+				WebDriverWait wait = new WebDriverWait(webDriver, 20);
+				waitDone(wait);
+				
+				WebElement inputEle = webDriver.findElement(By.xpath("//input[@class='laypage_skip']"));
+				inputEle.sendKeys(String.valueOf(pageNum));
+				webDriver.findElement(By.xpath("//button[@class='laypage_btn']")).click();
+				WebDriverWait wait1 = new WebDriverWait(webDriver, 20);
+				waitDone(wait1);
+				
+				
+				getInfo(webDriver, page);
+
+				int totalNum = Integer.valueOf(webDriver.findElement(By.xpath("//b[@class='totalPage']")).getText()) ;
+				for(int j = pageNum + 1; j <= totalNum && j < pageNum + sizeLimit; j++) {
+					WebElement nextPage = webDriver.findElement(By.xpath("//a[@class='laypage_next']"));
+					nextPage.click();
+					waitDone(wait);
+					getInfo(webDriver, page);
+				}
+				
+				page.addTargetRequest(matcher_page.group(1) + "?type=" + type + "&page=" + (pageNum + sizeLimit));
+
+			}else {
 				List<WebElement> trElements = webDriver.findElements(By.xpath("//div[@class='detail_list']//table/tbody/tr"));
 				ItemInfo itemInfo = new ItemInfo();
 				for(WebElement trElement : trElements) {
@@ -142,29 +185,7 @@ public class CfdaSeleniumDownloader implements Downloader, Closeable{
 					}
 				}
 				page.putField("info", JSON.toJSONString(itemInfo));
-			}else {
-	        	int menuSize = webDriver.findElements(By.xpath("//ul[@class='show_lits ylqx']//li")).size();
-				for(int i = 1; i <= menuSize; i++) {
-					WebElement menuElement = webDriver.findElement(By.xpath("//ul[@class='show_lits ylqx']//li[" + i + "]"));
-					menuElement.click();
-					
-					WebDriverWait wait = new WebDriverWait(webDriver, 20);
-					waitDone(wait);
-					
-					getInfo(webDriver, page);
-					
-					
-					int totalNum = Integer.valueOf(webDriver.findElement(By.xpath("//b[@class='totalPage']")).getText()) ;
-					for(int j = 2; j <= totalNum; j++) {
-						WebElement nextPage = webDriver.findElement(By.xpath("//a[@class='laypage_next']"));
-						nextPage.click();
-						waitDone(wait);
-						getInfo(webDriver, page);
-					}
-					
-					
-				}
-	        }
+			}
 		
 		}catch(Exception e){
 			e.printStackTrace();
