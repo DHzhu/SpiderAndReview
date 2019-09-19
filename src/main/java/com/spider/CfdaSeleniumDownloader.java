@@ -89,6 +89,7 @@ public class CfdaSeleniumDownloader implements Downloader, Closeable{
 
 		webDriver.get(request.getUrl());
 		WebDriver.Options manage = webDriver.manage();
+		
 		Site site = task.getSite();
 		if (site.getCookies() != null) {
 			for (Map.Entry<String, String> cookieEntry : site.getCookies()
@@ -96,6 +97,7 @@ public class CfdaSeleniumDownloader implements Downloader, Closeable{
 				Cookie cookie = new Cookie(cookieEntry.getKey(),
 						cookieEntry.getValue());
 				manage.addCookie(cookie);
+				
 			}
 		}
 		
@@ -119,19 +121,20 @@ public class CfdaSeleniumDownloader implements Downloader, Closeable{
 				
 			}else if(url.matches(".*?totalNum=(\\d+)&currentPage=(\\d+)$")) {
 								
-				getInfo(webDriver, page);
-				
-				
-				Pattern pattern_page = Pattern.compile(".*?totalNum=(\\d+)&currentPage=(\\d+)$",Pattern.CASE_INSENSITIVE);
-		        Matcher matcher_page = pattern_page.matcher(url);		        
-		        matcher_page.find();
-		        
-		        int totalNum = Integer.valueOf(matcher_page.group(1));
-		        int currentPage = Integer.valueOf(matcher_page.group(2));
-		        if((currentPage + 1) < totalNum) {
-		        	page.addTargetRequest(url.replace("currentPage=" + currentPage, "currentPage=" + (currentPage + 1)));
-		        }
-		        
+				int result = getInfo(webDriver, page);
+				if(result == 0) {
+					page.addTargetRequest(url);
+				}else {
+					Pattern pattern_page = Pattern.compile(".*?totalNum=(\\d+)&currentPage=(\\d+)$",Pattern.CASE_INSENSITIVE);
+			        Matcher matcher_page = pattern_page.matcher(url);		        
+			        matcher_page.find();
+			        
+			        int totalNum = Integer.valueOf(matcher_page.group(1));
+			        int currentPage = Integer.valueOf(matcher_page.group(2));
+			        if((currentPage + 1) < totalNum) {
+			        	page.addTargetRequest(url.replace("currentPage=" + currentPage, "currentPage=" + (currentPage + 1)));
+			        }
+				}		        
 			}else {
 				List<WebElement> trElements = webDriver.findElements(By.xpath("//div[@class='detail_list']//table/tbody/tr"));
 				ItemInfo itemInfo = new ItemInfo();
@@ -196,7 +199,7 @@ public class CfdaSeleniumDownloader implements Downloader, Closeable{
 		});
 	}
 	
-	private void getInfo(WebDriver webDriver, Page page) {
+	private int getInfo(WebDriver webDriver, Page page) {
 		int liSize = webDriver.findElements(By.xpath("//li/a")).size();
 		
 		for(int j = 1; j <= liSize; j++) {
@@ -211,6 +214,8 @@ public class CfdaSeleniumDownloader implements Downloader, Closeable{
 	        	log.info(matcher_page.group(1).replaceAll("'", "").replaceAll(",", "/"));
 	        }
 		}
+		
+		return liSize;
 	}
 
 

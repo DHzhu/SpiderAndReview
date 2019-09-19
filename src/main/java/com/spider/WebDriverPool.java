@@ -14,6 +14,7 @@ import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Proxy.ProxyType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
@@ -58,6 +59,8 @@ public class WebDriverPool {
 	
 	private SpiderProperties spiderProperties = SpringBeanUtil.getBean("spiderProperties");
 	
+	private IpContainer ipContainer = SpringBeanUtil.getBean("ipContainer");; 
+	
 	public void configure() throws IOException{
 		String driver = spiderProperties.getDriver();
 		String isUseProxy = spiderProperties.getProxyType();
@@ -93,13 +96,16 @@ public class WebDriverPool {
 			
 			sCaps.setCapability("acceptSslCerts",true);
 			
-			if(isUseProxy.equals("on")){
-				String proxyStr = spiderProperties.getProxyHost() + ":" + spiderProperties.getProxyPort();
-				org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
-				proxy.setSslProxy(proxyStr)
-					.setHttpProxy(proxyStr);
-				proxy.setProxyType(ProxyType.MANUAL);
-				builder.withProxy(proxy);
+			if(isUseProxy.equals("on") || isUseProxy.equals("true")){
+				String proxyStr = ipContainer.get();
+				
+				if(StringUtils.isNotBlank(proxyStr)) {
+					org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
+					proxy.setSslProxy(proxyStr)
+						.setHttpProxy(proxyStr);
+					proxy.setProxyType(ProxyType.MANUAL);
+					builder.withProxy(proxy);
+				}
 			}
 			pjsds = builder.build();
 		}
@@ -148,7 +154,9 @@ public class WebDriverPool {
 	 */
 	public WebDriver get() throws InterruptedException {
 		checkRunning();
+		
 		WebDriver poll = innerQueue.poll();
+		
 		if (poll != null) {
 			return poll;
 		}

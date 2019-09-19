@@ -35,6 +35,4 @@ public class SpiderProperties {
 	private String driverLogFile;
 	
 	private String proxyType;
-	private String proxyHost;
-	private Integer proxyPort;
 }

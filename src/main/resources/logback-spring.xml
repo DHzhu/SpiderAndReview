@@ -31,7 +31,8 @@
 		</rollingPolicy>
 	</appender>
 
-
+	<logger name="org.apache" level="WARN" />
+    <logger name="httpclient" level="WARN" /> 
 	<root>
 		<appender-ref ref="CONSOLE" />
 		<appender-ref ref="fileInfoLog" />

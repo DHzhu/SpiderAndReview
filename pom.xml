@@ -83,6 +83,12 @@
 			<groupId>us.codecraft</groupId>
 			<artifactId>webmagic-selenium</artifactId>
 			<version>0.7.3</version>
+			<exclusions>
+				<exclusion>
+    				<groupId>commons-logging</groupId>
+    				<artifactId>commons-logging</artifactId>
+    			</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- webmagic jar end -->
 
