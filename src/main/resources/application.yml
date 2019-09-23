@@ -17,10 +17,10 @@ spring:
     view:
       prefix: /view
   datasource:
-    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-    url: jdbc:sqlserver://47.96.224.221:1433;DatabaseName=hospital;
-    username: as
-    password: cldera.comSQL
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/pharmcube?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&useSSL=false
+    username: root
+    password: 123456
   http:
     encoding:
       charset: UTF-8
@@ -57,19 +57,18 @@ mybatis-plus:
 spider:
   retryTimes: 3
   sleepTime: 100
-  #starUrl: http://db.pharmcube.com/database/cfda  #爬取入口
-  starUrl: http://db.pharmcube.com/database/cfda/detail/cfda_inlet_instrument_history_data/12437
-  #starUrl: http://db.pharmcube.com/database/cfda/detail/cfda_cn_instrument/f3bb342fe3409a3bcb6eb81e092ac54e
-  savePath: D:/Temps/cache/cfda.txt			#文件存放路径
+  #starUrl: http://db.pharmcube.com/database/cfda?retryTime=1  #爬取入口
+  starUrl: http://db.pharmcube.com/database/cfda/detail/cfda_inlet_instrument_history_data/12437?retryTime=1
+  #starUrl: http://db.pharmcube.com/database/cfda/result?searchTable=国产器械&retryTime=1&totalNum=9850&currentPage=1
+  savePath: D:/files/temp/data/cfda.txt			#文件存放路径
   detailPath: http://db.pharmcube.com/database/cfda/detail/    #详情接口，勿改
-  threadNum: 3		#启动线程数
+  threadNum: 1		#启动线程数
   driver: phantomjs
-  execPath: D:/Projects/Workspace/phantomjs_2.0.exe		#phantomjs路径，linux下要安装phantomjs
+  execPath: D:/projects/Workspace/phantomjs_2.0.exe		#phantomjs路径，linux下要安装phantomjs
   driverLoglevel: INFO
   driverLogFile: D:/weblogs/spiderAndReview/phantomjsdriver.log
-  proxyType: off
-  proxyHost: 120.37.52.38
-  proxyPort: 8118
+  proxyType: on
+
   
 
 

@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -98,7 +99,7 @@ public class WebDriverPool {
 			
 			if(isUseProxy.equals("on") || isUseProxy.equals("true")){
 				String proxyStr = ipContainer.get();
-				
+				//String proxyStr = "159.65.237.253:8080";
 				if(StringUtils.isNotBlank(proxyStr)) {
 					org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
 					proxy.setSslProxy(proxyStr)
@@ -199,6 +200,23 @@ public class WebDriverPool {
 			log.info("Quit webDriver" + webDriver);
 			webDriver.quit();
 			webDriver = null;
+		}
+	}
+	
+	public void closeOne(WebDriver webDriver) {
+		synchronized (webDriverList) {
+			Iterator<WebDriver> iterator = webDriverList.iterator();
+			while (iterator.hasNext()) {
+				if(webDriver == iterator.next()) {
+					try {
+						webDriver.quit();
+						iterator.remove();
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
+				}
+				
+			}
 		}
 	}
 }

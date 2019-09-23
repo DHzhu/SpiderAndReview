@@ -101,11 +101,19 @@ public class CfdaSeleniumDownloader implements Downloader, Closeable{
 			}
 		}
 		
+		boolean returnFlag = true;
+		
 		try{
 			String url = request.getUrl();
 			
-			if(url.matches(".*?/cfda$")) {
+			if(url.matches(".*?/cfda\\?retryTime=(\\d+)$")) {
 				int menuSize = webDriver.findElements(By.xpath("//ul[@class='show_lits ylqx']//li")).size();
+				
+				if(menuSize == 0) {
+					retry(page, url);
+					returnFlag = false;
+				}
+				
 				for(int i = 1; i <= menuSize; i++) {
 					WebElement menuElement = webDriver.findElement(By.xpath("//ul[@class='show_lits ylqx']//li[" + i + "]"));
 					menuElement.click();
@@ -115,66 +123,72 @@ public class CfdaSeleniumDownloader implements Downloader, Closeable{
 					
 					int totalNum = Integer.valueOf(webDriver.findElement(By.xpath("//b[@class='totalPage']")).getText());
 					
-					page.addTargetRequest(url + "/result?searchTable=" + URLEncoder.encode(menuElement.getText(), "UTF-8") + "&totalNum=" + totalNum + "&currentPage=1");
+					page.addTargetRequest(url + "/result?searchTable=" + URLEncoder.encode(menuElement.getText(), "UTF-8") + "&retryTime=1&totalNum=" + totalNum + "&currentPage=1");
 				}
-
-				
 			}else if(url.matches(".*?totalNum=(\\d+)&currentPage=(\\d+)$")) {
 								
 				int result = getInfo(webDriver, page);
 				if(result == 0) {
-					page.addTargetRequest(url);
+					retry(page, url);
+					returnFlag = false;
 				}else {
-					Pattern pattern_page = Pattern.compile(".*?totalNum=(\\d+)&currentPage=(\\d+)$",Pattern.CASE_INSENSITIVE);
+					Pattern pattern_page = Pattern.compile(".*?retryTime=(\\d+)&totalNum=(\\d+)&currentPage=(\\d+)$",Pattern.CASE_INSENSITIVE);
 			        Matcher matcher_page = pattern_page.matcher(url);		        
 			        matcher_page.find();
 			        
-			        int totalNum = Integer.valueOf(matcher_page.group(1));
-			        int currentPage = Integer.valueOf(matcher_page.group(2));
+			        int retryTime = Integer.valueOf(matcher_page.group(1));
+			        int totalNum = Integer.valueOf(matcher_page.group(2));
+			        int currentPage = Integer.valueOf(matcher_page.group(3));
 			        if((currentPage + 1) < totalNum) {
-			        	page.addTargetRequest(url.replace("currentPage=" + currentPage, "currentPage=" + (currentPage + 1)));
+			        	page.addTargetRequest(url.replace("retryTime=" + retryTime +"&currentPage=" + currentPage, "retryTime=1&currentPage=" + (currentPage + 1)));
 			        }
 				}		        
 			}else {
 				List<WebElement> trElements = webDriver.findElements(By.xpath("//div[@class='detail_list']//table/tbody/tr"));
-				ItemInfo itemInfo = new ItemInfo();
-				for(WebElement trElement : trElements) {
-					List<WebElement> tds = trElement.findElements(By.xpath("td"));
-					if(tds.size() == 2) {
-						WebElement fristTd = tds.get(0);
-						
-						String name = fristTd.getText();
-						String value = tds.get(1).getText();
-						if(name.equals("批准日期")) {
-							itemInfo.setApprovalDate(value.replaceAll("\\.", "-"));
-						}else if(name.equals("有效期") || name.equals("有效期至") || name.equals("有效期截止日")) {
-							if(itemInfo.getExpiredDate() == null || itemInfo.getExpiredDate().equals("")) {
-								itemInfo.setExpiredDate(value.replaceAll("\\.", "-"));
-							}
-						}else if(name.equals("地址") || name.equals("注册人住所") || name.equals("生产厂地址（中文）")) {
-							if(itemInfo.getEnterpriseAddress() == null || itemInfo.getEnterpriseAddress().equals("")) {
-								itemInfo.setEnterpriseAddress(value);
-							}
-						}else if(name.equals("生产单位") || name.equals("注册人名称") || name.equals("生产厂商名称（中文）") || name.equals("生产厂商名称（英文）")) {
-							if(itemInfo.getEnterprise() == null || itemInfo.getEnterprise().equals("")) {
-								itemInfo.setEnterprise(value);
-							}
+				
+				if(trElements == null || trElements.size() == 0) {
+					retry(page, url);
+					returnFlag = false;
+				}else {
+					ItemInfo itemInfo = new ItemInfo();
+					for(WebElement trElement : trElements) {
+						List<WebElement> tds = trElement.findElements(By.xpath("td"));
+						if(tds.size() == 2) {
+							WebElement fristTd = tds.get(0);
 							
-						}else if(name.equals("注册号") || name.equals("注册证编号")) {
-							if(itemInfo.getApprovalNum() == null || itemInfo.getApprovalNum().equals("")) {
-								itemInfo.setApprovalNum(value);
+							String name = fristTd.getText();
+							String value = tds.get(1).getText();
+							if(name.equals("批准日期")) {
+								itemInfo.setApprovalDate(value.replaceAll("\\.", "-"));
+							}else if(name.equals("有效期") || name.equals("有效期至") || name.equals("有效期截止日")) {
+								if(itemInfo.getExpiredDate() == null || itemInfo.getExpiredDate().equals("")) {
+									itemInfo.setExpiredDate(value.replaceAll("\\.", "-"));
+								}
+							}else if(name.equals("地址") || name.equals("注册人住所") || name.equals("生产厂地址（中文）")) {
+								if(itemInfo.getEnterpriseAddress() == null || itemInfo.getEnterpriseAddress().equals("")) {
+									itemInfo.setEnterpriseAddress(value);
+								}
+							}else if(name.equals("生产单位") || name.equals("注册人名称") || name.equals("生产厂商名称（中文）") || name.equals("生产厂商名称（英文）")) {
+								if(itemInfo.getEnterprise() == null || itemInfo.getEnterprise().equals("")) {
+									itemInfo.setEnterprise(value);
+								}
+								
+							}else if(name.equals("注册号") || name.equals("注册证编号")) {
+								if(itemInfo.getApprovalNum() == null || itemInfo.getApprovalNum().equals("")) {
+									itemInfo.setApprovalNum(value);
+								}
+							}else if(name.equals("产品名称") || name.equals("产品名称（中文）")) {
+								if(itemInfo.getProductName() == null || itemInfo.getProductName().equals("")) {
+									itemInfo.setProductName(value);
+								}
 							}
-						}else if(name.equals("产品名称") || name.equals("产品名称（中文）")) {
-							if(itemInfo.getProductName() == null || itemInfo.getProductName().equals("")) {
-								itemInfo.setProductName(value);
-							}
+							String[] splitUrl = url.split("/");
+							itemInfo.setEsId(splitUrl[splitUrl.length - 1]);
 						}
-						String[] splitUrl = url.split("/");
-						itemInfo.setEsId(splitUrl[splitUrl.length - 1]);
-					}
 
+					}
+					page.putField("info", JSON.toJSONString(itemInfo));
 				}
-				page.putField("info", JSON.toJSONString(itemInfo));
 			}
 		
 		}catch(Exception e){
@@ -182,7 +196,12 @@ public class CfdaSeleniumDownloader implements Downloader, Closeable{
 		}
 		
 		page.setRawText(content);
-		webDriverPool.returnToPool(webDriver);
+		if(returnFlag) {
+			webDriverPool.returnToPool(webDriver);
+		}else {
+			webDriverPool.closeOne(webDriver);
+		}
+		
 		return page;
 	}
 	
@@ -216,6 +235,16 @@ public class CfdaSeleniumDownloader implements Downloader, Closeable{
 		}
 		
 		return liSize;
+	}
+	
+	private void retry(Page page, String url) {
+		Pattern pattern_retry = Pattern.compile("retryTime=(\\d+)",Pattern.CASE_INSENSITIVE);
+        Matcher matcher_retry = pattern_retry.matcher(url);		        
+        matcher_retry.find();
+        int retryTime = Integer.valueOf(matcher_retry.group(1));
+        if(retryTime < 10) {
+        	page.addTargetRequest(url.replace("retryTime=" + retryTime, "retryTime=" + (retryTime + 1)));
+        }
 	}
 
 
