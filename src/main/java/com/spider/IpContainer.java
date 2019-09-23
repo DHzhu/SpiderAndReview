@@ -13,25 +13,33 @@ import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
+import com.config.SpiderProperties;
 import com.model.ItemIp;
 import com.service.ItemIpService;
 import com.util.HTTPClientsUtil;
 
 /** 
 * @ClassName: IpContainer 
-* @Description: TODO(这里用一句话描述这个类的作用) 
+* @Description: 保存爬去可用的IP
 * @author: zhuyj
 * @date: 2019-09-19 
 */
 @Component
 public class IpContainer {
+	private static Logger log = LoggerFactory.getLogger(IpContainer.class);
+	
 	private static BlockingDeque<String> innerQueue = new LinkedBlockingDeque<String>();
 	@Autowired
 	private ItemIpService itemIpService;
+	
+	@Autowired
+	private SpiderProperties spiderProperties;
  	
 	public String get() {
 		
@@ -46,9 +54,9 @@ public class IpContainer {
 	
 	@SuppressWarnings("unchecked")
 	private void init() {
+		log.info("获取可用ip");
+		String ipStr = HTTPClientsUtil.doGet(spiderProperties.getProxyPool(), "get", null, null, 0);
 		
-		String ipStr = HTTPClientsUtil.doGet("http://proxylist.fatezero.org/proxy.list", "get", null, null, 0);
-		//String ipStr = HTTPClientsUtil.doGet("https://raw.githubusercontent.com/fate0/proxylist/master/proxy.list", "get", null, null, 0);
 		int num = 0;
 		if(StringUtils.isNoneEmpty(ipStr)) {
 			for(String ip : ipStr.split("\n")) {
@@ -59,16 +67,14 @@ public class IpContainer {
 				int port = (int) map.get("port");
 				BigDecimal response = (BigDecimal) map.get("response_time");
 				
-				System.out.println(String.format("%s-%s:%s-%s", type, host, port, response));
 				if("http".equalsIgnoreCase(type) && response.compareTo(BigDecimal.valueOf(3)) == -1) {
 					
 					ItemIp itemIp = itemIpService.search(host);
 					if(itemIp == null || StringUtils.isEmpty(itemIp.getIp())) {
-						String returnStr = HTTPClientsUtil.doGet("http://icanhazip.com/", "get", null, host, port);
+						String returnStr = HTTPClientsUtil.doGet(spiderProperties.getProxyCheck(), "get", null, host, port);
 						
 						if(StringUtils.isNotEmpty(returnStr)) {
 							returnStr = returnStr.replaceAll("\n", "");
-							System.out.println(String.format("%s:%s %s", host, returnStr, host.equalsIgnoreCase(returnStr)));
 							if(host.equalsIgnoreCase(returnStr)) {
 								itemIpService.save(host);
 								innerQueue.add(host + ":" + port);

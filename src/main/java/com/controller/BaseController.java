@@ -13,7 +13,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,7 +22,6 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.config.SpiderProperties;
 import com.model.ItemInfo;
 import com.service.IItemInfoService;
-import com.spider.IpChangeEvent;
 import com.spider.StartSpider;
 
 /**
@@ -43,9 +41,6 @@ public class BaseController {
 	
 	@Autowired
 	private SpiderProperties spiderProperties;
-	
-	 @Autowired
-	 ApplicationContext applicationContext;
 
 	@RequestMapping(method = RequestMethod.GET, path = "/search")
 	@ResponseBody
@@ -84,7 +79,6 @@ public class BaseController {
 		
 		Thread thread = new Thread(new StartSpider(spiderProperties));
 		thread.start();
-		applicationContext.publishEvent(new IpChangeEvent(this));
 		
 		map.put("result", "开始爬取数据");
 		

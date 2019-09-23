@@ -68,6 +68,8 @@ spider:
   driverLoglevel: INFO
   driverLogFile: D:/weblogs/spiderAndReview/phantomjsdriver.log
   proxyType: on
+  proxyPool: http://proxylist.fatezero.org/proxy.list
+  proxyCheck: http://icanhazip.com/
 
   
 
