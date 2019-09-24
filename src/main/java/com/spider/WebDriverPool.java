@@ -99,7 +99,6 @@ public class WebDriverPool {
 			
 			if(isUseProxy.equals("on") || isUseProxy.equals("true")){
 				String proxyStr = ipContainer.get();
-				//String proxyStr = "159.65.237.253:8080";
 				if(StringUtils.isNotBlank(proxyStr)) {
 					org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
 					proxy.setSslProxy(proxyStr)

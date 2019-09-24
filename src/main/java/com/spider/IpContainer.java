@@ -55,10 +55,15 @@ public class IpContainer {
 	@SuppressWarnings("unchecked")
 	private void init() {
 		log.info("获取可用ip");
-		String ipStr = HTTPClientsUtil.doGet(spiderProperties.getProxyPool(), "get", null, null, 0);
+		int times = 1;
+		String ipStr = "";
+		while(times <= 3 && StringUtils.isEmpty(ipStr)) {
+			ipStr = HTTPClientsUtil.doGet(spiderProperties.getProxyPool(), "get", null, null, 0);
+			times++;
+		}
 		
 		int num = 0;
-		if(StringUtils.isNoneEmpty(ipStr)) {
+		if(StringUtils.isNotEmpty(ipStr)) {
 			for(String ip : ipStr.split("\n")) {
 				Map<String, Object> map = (Map<String, Object>)JSON.parse(ip);
 				
